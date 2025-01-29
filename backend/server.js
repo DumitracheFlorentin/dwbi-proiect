@@ -1,10 +1,12 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import { CronJob } from "cron";
 
 import corsOptions from './shared/config/cors.js'
 import inventoryRoutes from './routes/inventory.route.js'
 import sequelize from './shared/db/index.js'
+import updateOLAP from "./services/updateOlapService.js";
 
 dotenv.config()
 
@@ -30,5 +32,14 @@ try {
 
 // Pornire server
 app.listen(PORT, () => {
-  console.log(`🚀 Serverul rulează pe http://localhost:${PORT}`)
-})
+  CronJob.from({
+    // cronTime: "10 0 * * *", // a little later after midnight
+    cronTime: "* * * * *", // a little later after midnight
+    onTick: () => {
+      updateOLAP();
+    },
+    start: true,
+  });
+
+  console.log(`🚀 Serverul rulează pe http://localhost:${PORT}`);
+});
