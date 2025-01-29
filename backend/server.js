@@ -1,6 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 
+import corsOptions from './shared/config/cors.js'
 import inventoryRoutes from './routes/inventory.route.js'
 import sequelize from './shared/db/index.js'
 
@@ -9,8 +11,13 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
-app.use(express.json())
+app.use(cors(corsOptions))
 
+// built-in middleware to handle urlencoded form data
+app.use(express.urlencoded({ extended: false }))
+
+// built-in middleware for json
+app.use(express.json())
 // routes
 app.use('/api/v1/inventory', inventoryRoutes)
 
